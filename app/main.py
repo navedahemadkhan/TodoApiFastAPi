@@ -45,12 +45,18 @@ def update_todo(id: int, todo: TodoUpdate, db: Session = Depends(get_db)):
     db_todo = db.query(models.Todo).filter(models.Todo.id == id).first()
     if db_todo is None:
         raise HTTPException(status_code=404, detail="Todo not found")
-    db_todo.title = todo.title
-    db_todo.description = todo.description
-    db_todo.completed = todo.completed
+    
+    if todo.title is not None:
+        db_todo.title = todo.title
+    if todo.description is not None:
+        db_todo.description = todo.description
+    if todo.completed is not None:
+        db_todo.completed = todo.completed
+    
     db.commit()
     db.refresh(db_todo)
     return db_todo
+
 
 @app.delete("/todos/{id}", response_model=Todo)
 def delete_todo(id: int, db: Session = Depends(get_db)):
