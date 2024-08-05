@@ -2,7 +2,7 @@ create virtal envirment
 
 pip install -r requirements.txt
 
-for run 
+for run -->
 uvicorn main:app --reload
 or 
-python main.py
+-->python main.py
