@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run Alembic migrations
-# echo "Running Alembic migrations..."
+echo 'Running Alembic migrations...'
 alembic upgrade head
 
 # Start FastAPI with Uvicorn

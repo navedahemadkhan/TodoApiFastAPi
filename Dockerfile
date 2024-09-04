@@ -33,11 +33,8 @@ EXPOSE 8000
 # Set the DATABASE_URL environment variable
 ENV DATABASE_URL="postgresql+asyncpg://khan:password@db/newtodo"
 
-# Copy the main.py script into the container
-COPY entrypoint.sh /app/entrypoint.sh
+# Install any additional Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Make sure the script is executable
-RUN chmod +x /app/entrypoint.sh
-
-# Use the Python interpreter to run the main.py script
-ENTRYPOINT ["python", "/app/entrypoint.sh"]
+# Use CMD to start Uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
