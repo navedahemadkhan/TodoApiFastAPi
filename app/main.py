@@ -14,20 +14,23 @@ app = FastAPI()
 
 @app.post("/singup")
 async def singup(user:create_user,db: AsyncSession=Depends(dependency.get_db)):
-    user_in_db = await dependency.get_user(db, user.username)
-    if user_in_db:
-        raise HTTPException(status_code=400,detail="User Already Exixt")
-    
-    hash_password = auth.get_password_hash(user.password)
-    data = models.User(
-        username = user.username,
-        email = user.email,
-        hashpassword = hash_password 
-        )
-    db.add(data)
-    await db.commit()
-    await db.refresh(data)
-    return data
+    try:
+        user_in_db = await dependency.get_user(db, user.username)
+        if user_in_db:
+            raise HTTPException(status_code=400,detail="User Already Exixt")
+        
+        hash_password = auth.get_password_hash(user.password)
+        data = models.User(
+            username = user.username,
+            email = user.email,
+            hashpassword = hash_password 
+            )
+        db.add(data)
+        await db.commit()
+        await db.refresh(data)
+        return data
+    except Exception as ex:
+        raise HTTPException(status_code=501, detail=str(ex))
 
 @app.post("/login")
 async def login(login: user_login, db: AsyncSession=Depends(dependency.get_db)):

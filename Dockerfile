@@ -31,7 +31,7 @@ COPY --from=build /app /app
 EXPOSE 8000
 
 # Set the DATABASE_URL environment variable
-ENV DATABASE_URL="postgresql+asyncpg://khan:password@db/newtodo"
+ENV DATABASE_URL="postgresql+asyncpg://khan:password@db:5432/newtodo"
 
 # Install any additional Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
