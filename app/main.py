@@ -14,7 +14,7 @@ app = FastAPI()
 
 @app.post("/singup")
 async def singup(user:create_user,db: AsyncSession=Depends(dependency.get_db)):
-    user_in_db = await dependency.get_user(db,username = user)
+    user_in_db = await dependency.get_user(db, user.username)
     if user_in_db:
         raise HTTPException(status_code=400,detail="User Already Exixt")
     
@@ -42,15 +42,15 @@ async def login(login: user_login, db: AsyncSession=Depends(dependency.get_db)):
 
 
 @app.post("/todos/", response_model=Todo)
-async def create_todo(todo: TodoCreate, db: AsyncSession = Depends(dependency.get_db), token: str = Depends(dependency.oauth_scheme)):
+async def create_todo(todo: TodoCreate, db: AsyncSession = Depends(dependency.get_db)):
     # Decode the token and extract the user
-    current_user = dependency.get_current_user(token)
+    # current_user = dependency.get_current_user(token)
 
     db_todo = models.Todo(
         title=todo.title, 
         description=todo.description,
         completed=todo.completed,
-        owner_id=current_user.id  
+        owner_id=todo.owner_id 
     )
     db.add(db_todo)
     await db.commit()
@@ -58,7 +58,7 @@ async def create_todo(todo: TodoCreate, db: AsyncSession = Depends(dependency.ge
     return db_todo
 
 @app.get("/todos/", response_model=List[Todo])
-async def read_todos(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(dependency.get_db),token: str = Depends(dependency.oauth_scheme)):
+async def read_todos(skip: int = 0, limit: int = 10, db: AsyncSession = Depends(dependency.get_db)):
     query = select(models.Todo).offset(skip).limit(limit)
     result = await db.execute(query)
     todos = result.scalars().all()
